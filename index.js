@@ -1,14 +1,43 @@
-let txtNome     = document.querySelector("#exampleInputName");
-let txtGeneroM  = document.querySelector("#exampleInputGenderM");
-let txtGeneroF  = document.querySelector("#exampleInputGenderF");
-let dtNasc      = document.querySelector("#exampleInputBirth");
-let pais        = document.querySelector("#exampleInputCountry");
-let txtEmail    = document.querySelector("#exampleInputEmail1");
-let txtPasswd   = document.querySelector("#exampleInputPassword1");
-let uploadImage = document.querySelector("#exampleInputFile");
+let fields = document.querySelectorAll("#form-user-create [name]");
+let user = {};//notação JSON
 
+function addLine(dataUser) {
+    let tr = document.createElement("tr");
 
-txtNome.value  = "Marcos".toLocaleUpperCase();
-txtNome.style.color = "red";
+    tr.innerHTML = `
+    <tr>
+    <td><img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm"></td>
+    <td>${dataUser.name}</td>
+    <td>${dataUser.email}</td>
+    <td>${dataUser.admin}</td>
+    <td>${dataUser.birth}</td>
+    <td>
+      <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+      <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+    </td>
+  </tr>
 
-console.log(txtNome);
+    `
+    document.getElementById("table-users").appendChild(tr);
+}
+
+/**
+ * Neste momento com o preventDefautl o formulário não fará o reload da pagina pois esse metóddo altera as ações
+ * padrões do formulário.
+ */
+document.getElementById("form-user-create").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    fields.forEach(function (field, index) {
+
+        if (field.name == "gender") {
+            if (field.checked) {
+                user[field.name] = field.value;
+            }
+        } else {
+            user[field.name] = field.value;
+        }
+    });
+    addLine(user);
+    console.log(user);
+});
