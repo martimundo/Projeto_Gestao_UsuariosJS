@@ -1,43 +1,59 @@
-let fields = document.querySelectorAll("#form-user-create [name]");
-let user = {};//notação JSON
+let user = new UserController("form-user-create", "table-users");
 
-function addLine(dataUser) {
-    let tr = document.createElement("tr");
 
-    tr.innerHTML = `
-    <tr>
-    <td><img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm"></td>
-    <td>${dataUser.name}</td>
-    <td>${dataUser.email}</td>
-    <td>${dataUser.admin}</td>
-    <td>${dataUser.birth}</td>
-    <td>
-      <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
-      <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-    </td>
-  </tr>
 
-    `
-    document.getElementById("table-users").appendChild(tr);
-}
+/**Os codigos abaixo são uma referência de podemos usar outras formas de escrever os códigos. */
+// let fields = document.querySelectorAll("#form-user-create [name]");
+// let user = {};//notação JSON
 
-/**
- * Neste momento com o preventDefautl o formulário não fará o reload da pagina pois esse metóddo altera as ações
- * padrões do formulário.
- */
-document.getElementById("form-user-create").addEventListener("submit", function (event) {
-    event.preventDefault();
+// function addLine(dataUser) {
 
-    fields.forEach(function (field, index) {
+//     console.log(dataUser);
 
-        if (field.name == "gender") {
-            if (field.checked) {
-                user[field.name] = field.value;
-            }
-        } else {
-            user[field.name] = field.value;
-        }
-    });
-    addLine(user);
-    console.log(user);
-});
+//     document.getElementById("table-users").innerHTML = `
+//     <tr>
+//         <td><img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm"></td>
+//         <td>${dataUser.name}</td>
+//         <td>${dataUser.email}</td>
+//         <td>${dataUser.admin}</td>
+//         <td>${dataUser.birth}</td>
+//         <td>
+//         <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+//         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+//         </td>
+//     </tr>
+//     `
+// }
+
+// /**
+//  * Neste momento com o preventDefautl o formulário não fará o reload da pagina pois esse metóddo altera as ações
+//  * padrões do formulário.
+//  */
+// document.getElementById("form-user-create").addEventListener("submit", function (event) {
+//     event.preventDefault();
+
+//     fields.forEach(function (field, index) {
+
+//         if (field.name == "gender") {
+//             if (field.checked) {
+//                 user[field.name] = field.value;
+//             }
+//         } else {
+//             user[field.name] = field.value;
+//         }
+//     });
+
+
+//     let objetUser = new User(
+//         user.name,
+//         user.gender,
+//         user.birth,
+//         user.country,
+//         user.email,
+//         user.password,
+//         user.photo,
+//         user.admin);
+
+//     addLine(objetUser);
+    
+// });
