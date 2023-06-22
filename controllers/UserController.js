@@ -11,19 +11,19 @@ class UserController {
 
         console.log(dataUser);
 
-        this.tableEl.innerHTML = `
-        <tr>
+        let tr = document.createElement('tr');
+        tr.innerHTML = `       
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-md"></td>
             <td>${dataUser.name}</td>
             <td>${dataUser.email}</td>
-            <td>${dataUser.admin}</td>
-            <td>${dataUser.birth}</td>
+            <td>${(dataUser.admin) ? 'Admin' : 'User'}</td>
+            <td>${dataUser.register}</td>
             <td>
             <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
             <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-            </td>
-        </tr>
+            </td>       
         `
+        this.tableEl.appendChild(tr); 
     }
 
     /**
@@ -37,12 +37,23 @@ class UserController {
 
             let values = this.getValues();
 
-            this.getPhoto((content) => {
+            let btn = document.querySelector("[type=submit]");
+
+            btn.disabled = true;
+
+            this.getPhoto().then((content) => {
+
                 values.photo = content;
                 this.addLine(values);
-            });
 
-        })
+                this.formEl.reset();
+
+                btn.disabled = false;
+
+            }, (e) => {
+                console.error(e)
+            });
+        });
 
     }
 
@@ -51,9 +62,9 @@ class UserController {
      */
     getPhoto() {
 
-        return Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
 
-            let fileReader = new FileReader();
+            let fileReader = new FileReader();//api de js para leitura de arquivos
 
             let elements = [...this.formEl.elements].filter(item => {
 
@@ -71,8 +82,11 @@ class UserController {
             fileReader.onerror = (e) => {
                 reject(e);
             };
-
-            fileReader.readAsDataURL(file);
+            if (file) {
+                fileReader.readAsDataURL(file);
+            } else {
+                resolve('dist/img/user1-128x128.jpg');
+            }
 
         });
 
@@ -95,6 +109,10 @@ class UserController {
                 if (field.checked) {
                     user[field.name] = field.value;
                 }
+            } else if (field.name == "admin") {
+
+                user[field.name] = field.checked;
+
             } else {
                 user[field.name] = field.value;
             }
