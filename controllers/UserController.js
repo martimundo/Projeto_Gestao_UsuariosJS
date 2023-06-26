@@ -12,18 +12,39 @@ class UserController {
         console.log(dataUser);
 
         let tr = document.createElement('tr');
+
+        tr.dataset.user = JSON.stringify(dataUser);
+
         tr.innerHTML = `       
             <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-md"></td>
             <td>${dataUser.name}</td>
             <td>${dataUser.email}</td>
             <td>${(dataUser.admin) ? 'Admin' : 'User'}</td>
-            <td>${dataUser.register}</td>
+            <td>${Utils.dateFormat(dataUser.register)}</td>
             <td>
             <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
             <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
             </td>       
         `
-        this.tableEl.appendChild(tr); 
+        this.tableEl.appendChild(tr);
+        this.updateCount();
+    }
+
+    updateCount(){
+
+        let numerUsers=0;
+        let numberUserAdmin = 0;
+        [...this.tableEl.children].forEach(tr=>{
+
+        numerUsers++;
+        let userAdmin = JSON.parse(tr.dataset.user);
+        if(userAdmin._admin) return numberUserAdmin++;
+
+        });
+        document.querySelector("#number-users").innerHTML = numerUsers;
+        document.querySelector("#number-users-admin").innerHTML = numberUserAdmin;       
+        
+        
     }
 
     /**
@@ -41,9 +62,11 @@ class UserController {
 
             btn.disabled = true;
 
+            if (!values) return false;
+
             this.getPhoto().then((content) => {
 
-                values.photo = content;
+                values.photo = (content);
                 this.addLine(values);
 
                 this.formEl.reset();
@@ -101,9 +124,17 @@ class UserController {
     getValues() {
 
         let user = {};
+        let isValid = true;
 
         //uso do operador spreed[...] não preciso passar quanto elementos eu tenho dentro do array
         [...this.formEl.elements].forEach(function (field, index) {
+
+            //validando campos do formulário
+            if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
+
+                field.parentElement.classList.add('has-error');
+                isValid = false;
+            }
 
             if (field.name == "gender") {
                 if (field.checked) {
@@ -117,7 +148,9 @@ class UserController {
                 user[field.name] = field.value;
             }
         });
-
+        if (!isValid) {
+            return false;
+        }
         return new User(
             user.name,
             user.gender,
