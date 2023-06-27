@@ -5,6 +5,14 @@ class UserController {
         this.formEl = document.getElementById(formId);
         this.tableEl = document.getElementById(tableId);
         this.onSubmit();
+        this.onEditCancel();
+    }
+
+    onEditCancel() {
+
+        document.querySelector("#box-user-update .btn-cancel").addEventListener("click", e => {
+            this.showPanelCreate();
+        })
     }
 
     addLine(dataUser) {
@@ -22,30 +30,77 @@ class UserController {
             <td>${(dataUser.admin) ? 'Admin' : 'User'}</td>
             <td>${Utils.dateFormat(dataUser.register)}</td>
             <td>
-            <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
+            <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
             <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
             </td>       
         `
+        tr.querySelector(".btn-edit").addEventListener("click", e => {
+
+            let json = JSON.parse(tr.dataset.user);
+            let form = document.querySelector("#form-user-update");
+
+            for (let name in json) {
+
+                let field = form.querySelector("[name=" + name.replace("_", "") + "]");
+
+                console.log(name, field);
+
+
+                if (field) {
+                    switch (field.type) {
+                        case "file":
+                            continue;
+                            break;
+                        case "radio":
+                            field = form.querySelector("[name=" + name.replace("_", "") + "][value=" + json[name] + "]");
+                            field.checked = true;
+                            break;
+                        case "checkbox":
+                            field.checked = json[name];
+                            break;
+                        default:
+                            field.value = json[name];
+                    }
+                }
+            }
+
+            this.showPanelUpdate();
+
+        });
+
         this.tableEl.appendChild(tr);
         this.updateCount();
     }
 
-    updateCount(){
+    /**
+    * Mostra o painel de edição e oculta o de criação e vice-versa
+    */
+    showPanelCreate() {
+        document.querySelector("#box-user-create").style.display = "block";
+        document.querySelector("#box-user-update").style.display = "none";
+    }
+    showPanelUpdate() {
+        document.querySelector("#box-user-create").style.display = "none";
+        document.querySelector("#box-user-update").style.display = "block";
+    }
 
-        let numerUsers=0;
+    updateCount() {
+
+        let numerUsers = 0;
         let numberUserAdmin = 0;
-        [...this.tableEl.children].forEach(tr=>{
+        [...this.tableEl.children].forEach(tr => {
 
-        numerUsers++;
-        let userAdmin = JSON.parse(tr.dataset.user);
-        if(userAdmin._admin) return numberUserAdmin++;
+            numerUsers++;
+            let userAdmin = JSON.parse(tr.dataset.user);
+            if (userAdmin._admin) return numberUserAdmin++;
 
         });
         document.querySelector("#number-users").innerHTML = numerUsers;
-        document.querySelector("#number-users-admin").innerHTML = numberUserAdmin;       
-        
-        
+        document.querySelector("#number-users-admin").innerHTML = numberUserAdmin;
+
+
     }
+
 
     /**
      * Metodo que vai controlar os eventos do formulário
