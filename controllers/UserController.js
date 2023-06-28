@@ -7,6 +7,7 @@ class UserController {
         this.tableEl = document.getElementById(tableId);
         this.onSubmit();
         this.onEditCancel();
+        this.selectAll();
     }
 
     /**
@@ -117,9 +118,19 @@ class UserController {
      */
     addLine(dataUser) {
 
-        //console.log(dataUser);
+        let tr = this.getTr(dataUser);
 
-        let tr = document.createElement('tr');
+        this.tableEl.appendChild(tr);
+
+        this.updateCount();
+    }
+
+    /**
+     * Metodo que vai criar uma tr na tabela.
+     */
+    getTr(dataUser, tr = null) {
+
+        if (tr === null) tr = document.createElement('tr');
 
         tr.dataset.user = JSON.stringify(dataUser);
 
@@ -136,8 +147,7 @@ class UserController {
         `
         this.addEventsTr(tr);
 
-        this.tableEl.appendChild(tr);
-        this.updateCount();
+        return tr;
     }
 
     /**
@@ -145,7 +155,7 @@ class UserController {
      * Metodo a verifica o click do botão editar para alterar os dados fórmulario
      */
     addEventsTr(tr) {
-        
+
         tr.querySelector(".btn-delete").addEventListener("click", e => {
 
             if (confirm("Deseja excluir o registro?")) {
@@ -227,6 +237,9 @@ class UserController {
             this.getPhoto(this.formEl).then((content) => {
 
                 values.photo = (content);
+
+                this.insert(values);
+
                 this.addLine(values);
 
                 this.formEl.reset();
@@ -238,6 +251,51 @@ class UserController {
             });
         });
 
+    }
+
+    /**
+     * Metodo que vai pegar os usuários que ja estão salvos na sessão.
+     */
+    getUsersStorage() {
+
+        let users = [];
+
+        if (localStorage.getItem("users")) {
+
+            users = JSON.parse(localStorage.getItem("users"));
+        }
+        return users;
+    }
+
+    /**
+     * Faz um select na sessão
+     */
+    selectAll() {
+
+        let users = this.getUsersStorage();
+
+        users.forEach(dataUser => {
+            let user = new User();
+
+            user.loadFromJson(dataUser);
+
+            this.addLine(user);
+        });
+
+    }
+
+    /**
+     * Metodo que vai salvar os dados na sessão storage
+     */
+    insert(data) {
+
+        let users = this.getUsersStorage();
+
+        users.push(data);
+
+        //vai deixar os dados na sessão do navegador.
+        //sessionStorage.setItem("users", JSON.stringify(users)); 
+        localStorage.setItem("users", JSON.stringify(users));
     }
 
     /**
@@ -278,28 +336,18 @@ class UserController {
                     result._photo = content;
                 }
 
-                tr.dataset.user = JSON.stringify(result);
+                let user = new User();
+                user.loadFromJson(result);
 
-                tr.innerHTML = `       
-                    <td><img src="${result._photo}" alt="User Image" class="img-circle img-md"></td>
-                    <td>${result._name}</td>
-                    <td>${result._email}</td>
-                    <td>${(result._admin) ? 'Admin' : 'User'}</td>
-                    <td>${Utils.dateFormat(result._register)}</td>
-                    <td>
-                    <button type="button" class="btn btn-primary btn-xs btn-flat btn-edit">Editar</button>
-                    <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                    </td>       
-                `
-                this.addEventsTr(tr);
+                this.getTr(user, tr);
 
                 this.updateCount();
 
                 this.formUpdateEl.reset();
+                
+                btn.disabled = false;
 
                 this.showPanelCreate();
-
-                btn.disabled = false;
 
             }, (e) => {
                 console.error(e)

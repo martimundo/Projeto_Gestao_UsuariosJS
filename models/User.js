@@ -14,58 +14,74 @@ class User {
 
     }
     //getters
-    get name(){
+    get name() {
         return this._name;
     }
-    get gender(){
+    get gender() {
         return this._gender;
     }
-    get birth(){
+    get birth() {
         return this._birth;
     }
-    get email(){
+    get email() {
         return this._email;
     }
-    get password(){
+    get password() {
         return this._password;
     }
-    get photo(){
+    get photo() {
         return this._photo;
     }
-    get admin(){
+    get admin() {
         return this._admin;
     }
-    get country(){
+    get country() {
         return this._country;
     }
-    get register(){
+    get register() {
         return this._register;
     }
 
     //setters
-    set name(name){
-         this._name = name;
+    set name(name) {
+        this._name = name;
     }
-    set gender(gender){
-         this._gender = gender;
+    set gender(gender) {
+        this._gender = gender;
     }
-    set birth(birth){
-         this._birth = birth;
+    set birth(birth) {
+        this._birth = birth;
     }
-    set email(email){
-         this._email = email;
+    set email(email) {
+        this._email = email;
     }
-    set password(password){
-         this._password = password;
+    set password(password) {
+        this._password = password;
     }
-    set photo(photo){
-         this._photo = photo;
+    set photo(photo) {
+        this._photo = photo;
     }
-    set admin(admin){
-         this._admin = admin;
+    set admin(admin) {
+        this._admin = admin;
     }
-    set country(country){
-         this._country = country;
+    set country(country) {
+        this._country = country;
     }
-   
+
+    loadFromJson(json) {
+
+        for (let name in json) {
+
+            switch (name) {
+                case "_register":
+                    this[name] = new Date(json[name]);
+                    break;
+                default:
+                    this[name] = json[name];
+            }
+
+        }
+
+    }
+
 }
