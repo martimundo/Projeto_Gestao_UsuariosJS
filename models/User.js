@@ -2,6 +2,7 @@ class User {
 
     constructor(name, gender, birth, country, email, password, photo, admin) {
 
+        this._id;
         this._name = name;
         this._gender = gender;
         this._birth = birth;
@@ -14,6 +15,11 @@ class User {
 
     }
     //getters
+
+    get id() {
+        return this._id;
+    }
+
     get name() {
         return this._name;
     }
@@ -83,5 +89,80 @@ class User {
         }
 
     }
+    /**
+   * Metodo que vai pegar os usuários que ja estão salvos na sessão.
+   */
+    static getUsersStorage() {
 
+        let users = [];
+
+        if (localStorage.getItem("users")) {
+
+            users = JSON.parse(localStorage.getItem("users"));
+        }
+        return users;
+    }
+    /**
+     * 
+     * @returns Metodod para criar o ID do registro como se fosse um banco de dados.
+     */
+    getNewID() {
+
+        let usersID = parseInt(localStorage.getItem("usersID"));
+
+        if (!usersID > 0) usersID = 0;
+
+        usersID++;
+
+        localStorage.setItem("usersID", usersID);
+
+        return usersID;
+    }
+    /**
+     * Metodo para salvar os registros no localStorage
+     */
+    save() {
+
+        let users = User.getUsersStorage();
+
+        if (this.id > 0) {
+
+            users.map(u => {
+
+                if (u._id == this.id) {
+
+                    Object.assign(u, this);
+
+                }
+                return u;
+            });
+
+        } else {
+
+            this._id = this.getNewID();
+
+            users.push(this);
+
+        }
+        //vai deixar os dados na sessão do navegador.
+        //sessionStorage.setItem("users", JSON.stringify(users)); 
+        localStorage.setItem("users", JSON.stringify(users));
+
+    }
+    /**
+     * Metodo para remover o usuário 
+     */
+    remove(){
+
+        let users = User.getUsersStorage();
+
+        users.forEach((userData, index)=>{
+
+            if(this._id == userData._id){
+                users.splice(index, 1);
+            }
+        });
+
+        localStorage.setItem("users", JSON.stringify(users));
+    }
 }

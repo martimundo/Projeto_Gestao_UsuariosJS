@@ -2,6 +2,7 @@ class UserController {
 
     constructor(formIdCreate, formIdUpdate, tableId) {
 
+       
         this.formEl = document.getElementById(formIdCreate);
         this.formUpdateEl = document.getElementById(formIdUpdate);
         this.tableEl = document.getElementById(tableId);
@@ -160,7 +161,12 @@ class UserController {
 
             if (confirm("Deseja excluir o registro?")) {
 
+                let user = new User();
+
+                user.remove();
+
                 tr.remove();
+
                 this.updateCount();
             }
         });
@@ -238,7 +244,7 @@ class UserController {
 
                 values.photo = (content);
 
-                this.insert(values);
+                values.save();
 
                 this.addLine(values);
 
@@ -253,28 +259,17 @@ class UserController {
 
     }
 
-    /**
-     * Metodo que vai pegar os usuários que ja estão salvos na sessão.
-     */
-    getUsersStorage() {
-
-        let users = [];
-
-        if (localStorage.getItem("users")) {
-
-            users = JSON.parse(localStorage.getItem("users"));
-        }
-        return users;
-    }
+  
 
     /**
      * Faz um select na sessão
      */
     selectAll() {
 
-        let users = this.getUsersStorage();
+        let users = User.getUsersStorage();
 
         users.forEach(dataUser => {
+
             let user = new User();
 
             user.loadFromJson(dataUser);
@@ -284,19 +279,19 @@ class UserController {
 
     }
 
-    /**
-     * Metodo que vai salvar os dados na sessão storage
-     */
-    insert(data) {
+    // /**
+    //  * Metodo que vai salvar os dados na sessão storage
+    //  */
+    // insert(data) {
 
-        let users = this.getUsersStorage();
+    //     let users = this.getUsersStorage();
 
-        users.push(data);
+    //     users.push(data);
 
-        //vai deixar os dados na sessão do navegador.
-        //sessionStorage.setItem("users", JSON.stringify(users)); 
-        localStorage.setItem("users", JSON.stringify(users));
-    }
+    //     //vai deixar os dados na sessão do navegador.
+    //     //sessionStorage.setItem("users", JSON.stringify(users)); 
+    //     localStorage.setItem("users", JSON.stringify(users));
+    // }
 
     /**
      * Metodo para Atualizar ou cancelar os dados de edição.
@@ -337,7 +332,10 @@ class UserController {
                 }
 
                 let user = new User();
+
                 user.loadFromJson(result);
+
+                user.save();
 
                 this.getTr(user, tr);
 
